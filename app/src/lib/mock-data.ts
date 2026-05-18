@@ -167,6 +167,52 @@ export const holdings: HoldingWithPrice[] = [
   // Blumenauer — speculative
   h("h54", "20", "BYND", 30000, 15000, 50000),
   h("h55", "20", "RIVN", 10000, 100000, 250000),
+  // === KR Politicians (mock prices — KRX not on Yahoo Finance MCP) ===
+  // 김상훈
+  { id: "hk1", politician_id: "k1", ticker: "005930", company_name: "삼성전자", shares: 50000, amount_low: 3000000000, amount_high: 4000000000, asset_type: "stock", updated_at: "2026-05-15", current_price: 83200, change_pct: 2.5 },
+  { id: "hk2", politician_id: "k1", ticker: "000660", company_name: "SK하이닉스", shares: 10000, amount_low: 1500000000, amount_high: 2000000000, asset_type: "stock", updated_at: "2026-05-15", current_price: 185000, change_pct: 1.8 },
+  // 유상범
+  { id: "hk3", politician_id: "k2", ticker: "006400", company_name: "삼성SDI", shares: 5000, amount_low: 1500000000, amount_high: 2000000000, asset_type: "stock", updated_at: "2026-05-15", current_price: 380000, change_pct: 1.4 },
+  { id: "hk4", politician_id: "k2", ticker: "373220", company_name: "LG에너지솔루션", shares: 3000, amount_low: 1000000000, amount_high: 1500000000, asset_type: "stock", updated_at: "2026-05-15", current_price: 420000, change_pct: 0.9 },
+  // 정진석
+  { id: "hk5", politician_id: "k3", ticker: "005930", company_name: "삼성전자", shares: 40000, amount_low: 2500000000, amount_high: 3500000000, asset_type: "stock", updated_at: "2026-05-15", current_price: 83200, change_pct: 2.5 },
+  { id: "hk6", politician_id: "k3", ticker: "005380", company_name: "현대차", shares: 8000, amount_low: 1500000000, amount_high: 2000000000, asset_type: "stock", updated_at: "2026-05-15", current_price: 250000, change_pct: 1.2 },
+  // 박대출
+  { id: "hk7", politician_id: "k4", ticker: "035420", company_name: "네이버", shares: 15000, amount_low: 2000000000, amount_high: 3000000000, asset_type: "stock", updated_at: "2026-05-15", current_price: 210000, change_pct: 1.1 },
+  { id: "hk8", politician_id: "k4", ticker: "035720", company_name: "카카오", shares: 20000, amount_low: 500000000, amount_high: 1000000000, asset_type: "stock", updated_at: "2026-05-15", current_price: 42000, change_pct: 0.7 },
+  // 이해찬
+  { id: "hk9", politician_id: "k5", ticker: "068270", company_name: "셀트리온", shares: 12000, amount_low: 1500000000, amount_high: 2000000000, asset_type: "stock", updated_at: "2026-05-15", current_price: 180000, change_pct: 0.8 },
+  { id: "hk10", politician_id: "k5", ticker: "247540", company_name: "에코프로비엠", shares: 5000, amount_low: 500000000, amount_high: 1000000000, asset_type: "stock", updated_at: "2026-05-15", current_price: 120000, change_pct: 0.3 },
+  // 권성동
+  { id: "hk11", politician_id: "k6", ticker: "373220", company_name: "LG에너지솔루션", shares: 6000, amount_low: 2000000000, amount_high: 3000000000, asset_type: "stock", updated_at: "2026-05-15", current_price: 420000, change_pct: 0.9 },
+  { id: "hk12", politician_id: "k6", ticker: "005490", company_name: "POSCO홀딩스", shares: 10000, amount_low: 1500000000, amount_high: 2000000000, asset_type: "stock", updated_at: "2026-05-15", current_price: 320000, change_pct: 2.1 },
+  // 김병욱
+  { id: "hk13", politician_id: "k7", ticker: "012330", company_name: "현대모비스", shares: 8000, amount_low: 1500000000, amount_high: 2000000000, asset_type: "stock", updated_at: "2026-05-15", current_price: 230000, change_pct: 0.5 },
+  { id: "hk14", politician_id: "k7", ticker: "000270", company_name: "기아", shares: 15000, amount_low: 1000000000, amount_high: 1500000000, asset_type: "stock", updated_at: "2026-05-15", current_price: 95000, change_pct: 0.3 },
+  // 성일종
+  { id: "hk15", politician_id: "k8", ticker: "003490", company_name: "대한항공", shares: 20000, amount_low: 500000000, amount_high: 1000000000, asset_type: "stock", updated_at: "2026-05-15", current_price: 28000, change_pct: -0.4 },
+  { id: "hk16", politician_id: "k8", ticker: "020560", company_name: "아시아나항공", shares: 30000, amount_low: 200000000, amount_high: 500000000, asset_type: "stock", updated_at: "2026-05-15", current_price: 12000, change_pct: -0.2 },
+  // 양향자
+  { id: "hk17", politician_id: "k9", ticker: "207940", company_name: "삼성바이오로직스", shares: 2000, amount_low: 1500000000, amount_high: 2000000000, asset_type: "stock", updated_at: "2026-05-15", current_price: 850000, change_pct: 0.4 },
+  { id: "hk18", politician_id: "k9", ticker: "005930", company_name: "삼성전자", shares: 20000, amount_low: 1500000000, amount_high: 2000000000, asset_type: "stock", updated_at: "2026-05-15", current_price: 83200, change_pct: 2.5 },
+  // 추경호
+  { id: "hk19", politician_id: "k10", ticker: "012450", company_name: "한화에어로스페이스", shares: 5000, amount_low: 1500000000, amount_high: 2000000000, asset_type: "stock", updated_at: "2026-05-15", current_price: 380000, change_pct: 1.2 },
+  { id: "hk20", politician_id: "k10", ticker: "272210", company_name: "한화시스템", shares: 15000, amount_low: 500000000, amount_high: 1000000000, asset_type: "stock", updated_at: "2026-05-15", current_price: 22000, change_pct: 0.8 },
+  // 김태년
+  { id: "hk21", politician_id: "k11", ticker: "323410", company_name: "카카오뱅크", shares: 25000, amount_low: 500000000, amount_high: 1000000000, asset_type: "stock", updated_at: "2026-05-15", current_price: 28000, change_pct: -0.6 },
+  { id: "hk22", politician_id: "k11", ticker: "259960", company_name: "크래프톤", shares: 3000, amount_low: 500000000, amount_high: 1000000000, asset_type: "stock", updated_at: "2026-05-15", current_price: 280000, change_pct: -0.3 },
+  // 주호영
+  { id: "hk23", politician_id: "k12", ticker: "105560", company_name: "KB금융", shares: 15000, amount_low: 1000000000, amount_high: 1500000000, asset_type: "stock", updated_at: "2026-05-15", current_price: 85000, change_pct: 0.9 },
+  { id: "hk24", politician_id: "k12", ticker: "055550", company_name: "신한지주", shares: 20000, amount_low: 500000000, amount_high: 1000000000, asset_type: "stock", updated_at: "2026-05-15", current_price: 52000, change_pct: 0.7 },
+  // 박홍근
+  { id: "hk25", politician_id: "k13", ticker: "352820", company_name: "하이브", shares: 8000, amount_low: 500000000, amount_high: 1000000000, asset_type: "stock", updated_at: "2026-05-15", current_price: 180000, change_pct: -0.8 },
+  { id: "hk26", politician_id: "k13", ticker: "263750", company_name: "펄어비스", shares: 15000, amount_low: 500000000, amount_high: 1000000000, asset_type: "stock", updated_at: "2026-05-15", current_price: 38000, change_pct: -0.5 },
+  // 윤상현
+  { id: "hk27", politician_id: "k14", ticker: "042660", company_name: "두산에너빌리티", shares: 30000, amount_low: 500000000, amount_high: 1000000000, asset_type: "stock", updated_at: "2026-05-15", current_price: 22000, change_pct: -1.0 },
+  { id: "hk28", politician_id: "k14", ticker: "009540", company_name: "한국조선해양", shares: 5000, amount_low: 500000000, amount_high: 1000000000, asset_type: "stock", updated_at: "2026-05-15", current_price: 160000, change_pct: -0.6 },
+  // 우원식
+  { id: "hk29", politician_id: "k15", ticker: "011200", company_name: "HMM", shares: 40000, amount_low: 500000000, amount_high: 1000000000, asset_type: "stock", updated_at: "2026-05-15", current_price: 18000, change_pct: -1.2 },
+  { id: "hk30", politician_id: "k15", ticker: "028670", company_name: "팬오션", shares: 50000, amount_low: 200000000, amount_high: 500000000, asset_type: "stock", updated_at: "2026-05-15", current_price: 5200, change_pct: -0.8 },
 ];
 
 // === Calculate real daily PnL from Yahoo Finance prices ===

@@ -107,14 +107,18 @@ export default function PoliticianPage({
                 <TickerLogo ticker={holding.ticker} size={32} />
                 <div className="flex-1 min-w-0">
                   <span className="text-[12px] font-semibold text-gray-900 block truncate">
-                    {holding.ticker}
+                    {politician.country === "KR" ? holding.company_name : holding.ticker}
                   </span>
-                  <span className="text-[10px] text-gray-400">{holding.company_name}</span>
+                  <span className="text-[10px] text-gray-400">
+                    {politician.country === "KR" ? holding.ticker : holding.company_name}
+                  </span>
                 </div>
                 <div className="text-right">
                   {holding.current_price && (
                     <span className="text-[12px] font-semibold text-gray-900 block">
-                      ${holding.current_price.toLocaleString()}
+                      {politician.country === "KR"
+                        ? `${holding.current_price.toLocaleString()}원`
+                        : `$${holding.current_price.toLocaleString()}`}
                     </span>
                   )}
                   {holding.change_pct !== undefined && (
