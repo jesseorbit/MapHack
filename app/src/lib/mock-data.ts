@@ -1,5 +1,6 @@
 import type { Politician, Trade, DailyPnl, Holding } from "@/types/database";
 import krData from "./kr-politicians-data.json";
+import usTradesData from "./us-trades-data.json";
 
 // === KR Politicians generated from 뉴스타파 재산공개 DB (2025 공시) ===
 const krPoliticians: Politician[] = krData.map((mp, i) => ({
@@ -14,28 +15,21 @@ const krPoliticians: Politician[] = krData.map((mp, i) => ({
   created_at: "2025-03-27",
 }));
 
+// === US Politicians — auto-generated from Capitol Trades ===
+const usPoliticians: Politician[] = usTradesData.politicians.map((p, i) => ({
+  id: `us${i + 1}`,
+  name: p.name,
+  name_kr: null,
+  party: p.party === "D" ? "Democrat" : "Republican",
+  country: "US" as const,
+  chamber: p.chamber,
+  state: "",
+  photo_url: null,
+  created_at: "2026-01-01",
+}));
+
 export const politicians: Politician[] = [
-  // === US Politicians ===
-  { id: "1", name: "Nancy Pelosi", name_kr: "낸시 펠로시", party: "Democrat", country: "US", chamber: "House", state: "CA", photo_url: null, created_at: "2024-01-01" },
-  { id: "2", name: "Dan Crenshaw", name_kr: "댄 크렌쇼", party: "Republican", country: "US", chamber: "House", state: "TX", photo_url: null, created_at: "2024-01-01" },
-  { id: "3", name: "Tommy Tuberville", name_kr: "토미 터버빌", party: "Republican", country: "US", chamber: "Senate", state: "AL", photo_url: null, created_at: "2024-01-01" },
-  { id: "4", name: "Mark Green", name_kr: "마크 그린", party: "Republican", country: "US", chamber: "House", state: "TN", photo_url: null, created_at: "2024-01-01" },
-  { id: "5", name: "Josh Gottheimer", name_kr: "조시 고타이머", party: "Democrat", country: "US", chamber: "House", state: "NJ", photo_url: null, created_at: "2024-01-01" },
-  { id: "6", name: "Marjorie Taylor Greene", name_kr: "마져리 테일러 그린", party: "Republican", country: "US", chamber: "House", state: "GA", photo_url: null, created_at: "2024-01-01" },
-  { id: "7", name: "Michael McCaul", name_kr: "마이클 매콜", party: "Republican", country: "US", chamber: "House", state: "TX", photo_url: null, created_at: "2024-01-01" },
-  { id: "8", name: "Ro Khanna", name_kr: "로 칸나", party: "Democrat", country: "US", chamber: "House", state: "CA", photo_url: null, created_at: "2024-01-01" },
-  { id: "9", name: "Pat Fallon", name_kr: "팻 팔론", party: "Republican", country: "US", chamber: "House", state: "TX", photo_url: null, created_at: "2024-01-01" },
-  { id: "10", name: "John Curtis", name_kr: "존 커티스", party: "Republican", country: "US", chamber: "Senate", state: "UT", photo_url: null, created_at: "2024-01-01" },
-  { id: "11", name: "Debbie Wasserman Schultz", name_kr: "데비 와서만 슐츠", party: "Democrat", country: "US", chamber: "House", state: "FL", photo_url: null, created_at: "2024-01-01" },
-  { id: "12", name: "Sheldon Whitehouse", name_kr: "셸던 화이트하우스", party: "Democrat", country: "US", chamber: "Senate", state: "RI", photo_url: null, created_at: "2024-01-01" },
-  { id: "13", name: "Kevin Hern", name_kr: "케빈 헌", party: "Republican", country: "US", chamber: "House", state: "OK", photo_url: null, created_at: "2024-01-01" },
-  { id: "14", name: "Marie Gluesenkamp Perez", name_kr: "마리 글루센캠프 페레즈", party: "Democrat", country: "US", chamber: "House", state: "WA", photo_url: null, created_at: "2024-01-01" },
-  { id: "15", name: "Rick Scott", name_kr: "릭 스콧", party: "Republican", country: "US", chamber: "Senate", state: "FL", photo_url: null, created_at: "2024-01-01" },
-  { id: "16", name: "Suzan DelBene", name_kr: "수잔 델베네", party: "Democrat", country: "US", chamber: "House", state: "WA", photo_url: null, created_at: "2024-01-01" },
-  { id: "17", name: "French Hill", name_kr: "프렌치 힐", party: "Republican", country: "US", chamber: "House", state: "AR", photo_url: null, created_at: "2024-01-01" },
-  { id: "18", name: "Lois Frankel", name_kr: "로이스 프랭켈", party: "Democrat", country: "US", chamber: "House", state: "FL", photo_url: null, created_at: "2024-01-01" },
-  { id: "19", name: "Austin Scott", name_kr: "오스틴 스콧", party: "Republican", country: "US", chamber: "House", state: "GA", photo_url: null, created_at: "2024-01-01" },
-  { id: "20", name: "Earl Blumenauer", name_kr: "얼 블루먼아우어", party: "Democrat", country: "US", chamber: "House", state: "OR", photo_url: null, created_at: "2024-01-01" },
+  ...usPoliticians,
   // === KR Politicians — auto-generated from 뉴스타파 DB ===
   ...krPoliticians,
 ];
@@ -91,82 +85,49 @@ function h(id: string, polId: string, ticker: string, shares: number, amtLow: nu
   };
 }
 
+// === US Holdings — derived from Capitol Trades buy transactions ===
+const usHoldingsFromTrades: HoldingWithPrice[] = (() => {
+  const polTickers: Record<string, Record<string, { asset: string; amt: number }>> = {};
+  for (const t of usTradesData.trades) {
+    if (!t.ticker || t.type !== "buy") continue;
+    const pol = usPoliticians.find((p) => p.name === t.politician);
+    if (!pol) continue;
+    const key = pol.id;
+    if (!polTickers[key]) polTickers[key] = {};
+    if (!polTickers[key][t.ticker]) polTickers[key][t.ticker] = { asset: t.asset, amt: 0 };
+    // Estimate position from amount range
+    const midAmounts: Record<string, number> = {
+      "1K-15K": 8000, "15K-50K": 32500, "50K-100K": 75000,
+      "100K-250K": 175000, "250K-500K": 375000, "500K-1M": 750000, "1M-5M": 3000000,
+    };
+    polTickers[key][t.ticker].amt += midAmounts[t.amount] || 8000;
+  }
+  const result: HoldingWithPrice[] = [];
+  let idx = 0;
+  for (const [polId, tickers] of Object.entries(polTickers)) {
+    for (const [ticker, data] of Object.entries(tickers)) {
+      const p = prices[ticker];
+      const shares = p ? Math.round(data.amt / p.price) : 0;
+      result.push({
+        id: `hu${idx++}`,
+        politician_id: polId,
+        ticker,
+        company_name: data.asset,
+        shares: shares || null,
+        amount_low: Math.round(data.amt * 0.7),
+        amount_high: Math.round(data.amt * 1.3),
+        asset_type: "stock",
+        updated_at: "2026-05-15",
+        current_price: p?.price || 0,
+        change_pct: p?.changePct || 0,
+      });
+    }
+  }
+  return result;
+})();
+
 export const holdings: HoldingWithPrice[] = [
-  // Pelosi — big tech heavy
-  h("h1", "1", "NVDA", 5000, 1000000, 5000000),
-  h("h2", "1", "AAPL", 10000, 1000000, 5000000),
-  h("h3", "1", "GOOGL", 3000, 500000, 1000000),
-  h("h4", "1", "MSFT", 2000, 500000, 1000000),
-  h("h5", "1", "TSLA", 1500, 250000, 500000),
-  h("h6", "1", "AVGO", 800, 500000, 1000000),
-  // Crenshaw — diversified
-  h("h7", "2", "AMZN", 4000, 500000, 1000000),
-  h("h8", "2", "META", 1500, 500000, 1000000),
-  h("h9", "2", "LMT", 2000, 500000, 1000000),
-  h("h10", "2", "PLTR", 5000, 250000, 500000),
-  // Tuberville — TSLA heavy
-  h("h11", "3", "MSFT", 4000, 1000000, 5000000),
-  h("h12", "3", "TSLA", 8000, 1000000, 5000000),
-  h("h13", "3", "AMZN", 3000, 500000, 1000000),
-  // Green — defense
-  h("h14", "4", "LMT", 3000, 500000, 1000000),
-  h("h15", "4", "RTX", 5000, 500000, 1000000),
-  h("h16", "4", "GD", 2000, 250000, 500000),
-  // Gottheimer — AAPL, CRM
-  h("h17", "5", "AAPL", 8000, 1000000, 5000000),
-  h("h18", "5", "NVDA", 2000, 250000, 500000),
-  h("h19", "5", "CRM", 4000, 250000, 500000),
-  // MTG — TSLA, PLTR
-  h("h20", "6", "TSLA", 5000, 500000, 1000000),
-  h("h21", "6", "PLTR", 10000, 500000, 1000000),
-  // McCaul — semis + MSFT
-  h("h22", "7", "AVGO", 2000, 500000, 1000000),
-  h("h23", "7", "NVDA", 3000, 500000, 1000000),
-  h("h24", "7", "MSFT", 5000, 1000000, 5000000),
-  // Khanna — big tech
-  h("h25", "8", "GOOGL", 5000, 1000000, 5000000),
-  h("h26", "8", "MSFT", 3000, 500000, 1000000),
-  h("h27", "8", "AAPL", 4000, 500000, 1000000),
-  // Fallon — defense
-  h("h28", "9", "LMT", 4000, 1000000, 5000000),
-  h("h29", "9", "RTX", 6000, 500000, 1000000),
-  h("h30", "9", "GD", 3000, 500000, 1000000),
-  // Curtis — SaaS
-  h("h31", "10", "CRM", 5000, 250000, 500000),
-  h("h32", "10", "NOW", 8000, 500000, 1000000),
-  // Wasserman Schultz — healthcare
-  h("h33", "11", "UNH", 3000, 500000, 1000000),
-  h("h34", "11", "JNJ", 5000, 500000, 1000000),
-  // Whitehouse — pharma
-  h("h35", "12", "PFE", 20000, 250000, 500000),
-  h("h36", "12", "MRNA", 5000, 100000, 250000),
-  // Hern — energy
-  h("h37", "13", "XOM", 10000, 1000000, 5000000),
-  h("h38", "13", "CVX", 5000, 500000, 1000000),
-  // Perez — crypto/EV
-  h("h39", "14", "COIN", 3000, 250000, 500000),
-  h("h40", "14", "RIVN", 15000, 100000, 250000),
-  // Rick Scott — financials
-  h("h41", "15", "JPM", 4000, 500000, 1000000),
-  h("h42", "15", "GS", 1000, 500000, 1000000),
-  h("h43", "15", "BAC", 10000, 250000, 500000),
-  // DelBene — MSFT heavy (WA)
-  h("h44", "16", "MSFT", 6000, 1000000, 5000000),
-  h("h45", "16", "AMZN", 3000, 500000, 1000000),
-  h("h46", "16", "AAPL", 5000, 500000, 1000000),
-  // French Hill — banks
-  h("h47", "17", "BAC", 15000, 250000, 500000),
-  h("h48", "17", "WFC", 8000, 250000, 500000),
-  h("h49", "17", "JPM", 2000, 250000, 500000),
-  // Frankel — media
-  h("h50", "18", "DIS", 5000, 250000, 500000),
-  h("h51", "18", "NFLX", 6000, 250000, 500000),
-  // Austin Scott — industrial
-  h("h52", "19", "BA", 4000, 500000, 1000000),
-  h("h53", "19", "GE", 3000, 500000, 1000000),
-  // Blumenauer — speculative
-  h("h54", "20", "BYND", 30000, 15000, 50000),
-  h("h55", "20", "RIVN", 10000, 100000, 250000),
+  ...usHoldingsFromTrades,
   // === KR — 뉴스타파 재산공개 DB (163명, 877종목, 2025 공시) ===
   ...krData.flatMap((mp, i) =>
     mp.stocks.map((stock, j) => ({
@@ -269,35 +230,60 @@ export const dailyPnl: PnlEntry[] = allPnlRaw.map((entry, i) => ({
   rank: i + 1,
 }));
 
-export const trades: (Trade & { politician: Politician })[] = [
-  { id: "t1", politician_id: "1", ticker: "NVDA", company_name: "NVIDIA Corp", trade_type: "buy", amount_low: 1000000, amount_high: 5000000, trade_date: "2026-05-14", disclosure_date: "2026-05-15", created_at: "2026-05-15", politician: p("1") },
-  { id: "t2", politician_id: "3", ticker: "TSLA", company_name: "Tesla Inc", trade_type: "buy", amount_low: 1000000, amount_high: 5000000, trade_date: "2026-05-13", disclosure_date: "2026-05-15", created_at: "2026-05-15", politician: p("3") },
-  { id: "t3", politician_id: "2", ticker: "META", company_name: "Meta Platforms", trade_type: "sell", amount_low: 250000, amount_high: 500000, trade_date: "2026-05-12", disclosure_date: "2026-05-15", created_at: "2026-05-15", politician: p("2") },
-  { id: "t4", politician_id: "13", ticker: "XOM", company_name: "ExxonMobil", trade_type: "buy", amount_low: 1000000, amount_high: 5000000, trade_date: "2026-05-13", disclosure_date: "2026-05-15", created_at: "2026-05-15", politician: p("13") },
-  { id: "t5", politician_id: "16", ticker: "MSFT", company_name: "Microsoft Corp", trade_type: "buy", amount_low: 500000, amount_high: 1000000, trade_date: "2026-05-12", disclosure_date: "2026-05-15", created_at: "2026-05-15", politician: p("16") },
-  { id: "t6", politician_id: "10", ticker: "NOW", company_name: "ServiceNow", trade_type: "buy", amount_low: 500000, amount_high: 1000000, trade_date: "2026-05-12", disclosure_date: "2026-05-15", created_at: "2026-05-15", politician: p("10") },
-  { id: "t7", politician_id: "5", ticker: "CRM", company_name: "Salesforce", trade_type: "buy", amount_low: 250000, amount_high: 500000, trade_date: "2026-05-11", disclosure_date: "2026-05-15", created_at: "2026-05-15", politician: p("5") },
-  { id: "t8", politician_id: "15", ticker: "GS", company_name: "Goldman Sachs", trade_type: "sell", amount_low: 250000, amount_high: 500000, trade_date: "2026-05-09", disclosure_date: "2026-05-14", created_at: "2026-05-14", politician: p("15") },
-  { id: "t9", politician_id: "7", ticker: "MSFT", company_name: "Microsoft Corp", trade_type: "buy", amount_low: 500000, amount_high: 1000000, trade_date: "2026-05-12", disclosure_date: "2026-05-15", created_at: "2026-05-15", politician: p("7") },
-  { id: "t10", politician_id: "6", ticker: "TSLA", company_name: "Tesla Inc", trade_type: "buy", amount_low: 250000, amount_high: 500000, trade_date: "2026-05-08", disclosure_date: "2026-05-13", created_at: "2026-05-13", politician: p("6") },
-  { id: "t11", politician_id: "8", ticker: "GOOGL", company_name: "Alphabet Inc", trade_type: "sell", amount_low: 250000, amount_high: 500000, trade_date: "2026-05-11", disclosure_date: "2026-05-15", created_at: "2026-05-15", politician: p("8") },
-  { id: "t12", politician_id: "14", ticker: "COIN", company_name: "Coinbase", trade_type: "sell", amount_low: 100000, amount_high: 250000, trade_date: "2026-05-09", disclosure_date: "2026-05-14", created_at: "2026-05-14", politician: p("14") },
-  { id: "t13", politician_id: "19", ticker: "BA", company_name: "Boeing", trade_type: "buy", amount_low: 500000, amount_high: 1000000, trade_date: "2026-05-13", disclosure_date: "2026-05-15", created_at: "2026-05-15", politician: p("19") },
-  { id: "t14", politician_id: "11", ticker: "UNH", company_name: "UnitedHealth", trade_type: "buy", amount_low: 500000, amount_high: 1000000, trade_date: "2026-05-07", disclosure_date: "2026-05-13", created_at: "2026-05-13", politician: p("11") },
-  { id: "t15", politician_id: "4", ticker: "LMT", company_name: "Lockheed Martin", trade_type: "buy", amount_low: 500000, amount_high: 1000000, trade_date: "2026-05-12", disclosure_date: "2026-05-15", created_at: "2026-05-15", politician: p("4") },
-];
+// === Trades — auto-generated from Capitol Trades (real data) ===
+function parseAmount(amt: string): { low: number; high: number } {
+  const map: Record<string, { low: number; high: number }> = {
+    "1K-15K": { low: 1000, high: 15000 },
+    "15K-50K": { low: 15000, high: 50000 },
+    "50K-100K": { low: 50000, high: 100000 },
+    "100K-250K": { low: 100000, high: 250000 },
+    "250K-500K": { low: 250000, high: 500000 },
+    "500K-1M": { low: 500000, high: 1000000 },
+    "1M-5M": { low: 1000000, high: 5000000 },
+  };
+  return map[amt] || { low: 0, high: 0 };
+}
 
-export const trendingTickers = [
-  { ticker: "NVDA", name: "NVIDIA", buyCount: 14, sellCount: 2, price: prices.NVDA.price, change: prices.NVDA.changePct },
-  { ticker: "TSLA", name: "Tesla", buyCount: 9, sellCount: 4, price: prices.TSLA.price, change: prices.TSLA.changePct },
-  { ticker: "MSFT", name: "Microsoft", buyCount: 7, sellCount: 1, price: prices.MSFT.price, change: prices.MSFT.changePct },
-  { ticker: "AAPL", name: "Apple", buyCount: 8, sellCount: 1, price: prices.AAPL.price, change: prices.AAPL.changePct },
-  { ticker: "XOM", name: "ExxonMobil", buyCount: 6, sellCount: 0, price: prices.XOM.price, change: prices.XOM.changePct },
-  { ticker: "CRM", name: "Salesforce", buyCount: 5, sellCount: 1, price: prices.CRM.price, change: prices.CRM.changePct },
-  { ticker: "AVGO", name: "Broadcom", buyCount: 6, sellCount: 1, price: prices.AVGO.price, change: prices.AVGO.changePct },
-  { ticker: "AMZN", name: "Amazon", buyCount: 5, sellCount: 2, price: prices.AMZN.price, change: prices.AMZN.changePct },
-  { ticker: "META", name: "Meta", buyCount: 3, sellCount: 6, price: prices.META.price, change: prices.META.changePct },
-  { ticker: "LMT", name: "Lockheed Martin", buyCount: 5, sellCount: 0, price: prices.LMT.price, change: prices.LMT.changePct },
-  { ticker: "JPM", name: "JPMorgan", buyCount: 4, sellCount: 1, price: prices.JPM.price, change: prices.JPM.changePct },
-  { ticker: "GOOGL", name: "Alphabet", buyCount: 4, sellCount: 3, price: prices.GOOGL.price, change: prices.GOOGL.changePct },
-];
+export const trades: (Trade & { politician: Politician })[] = usTradesData.trades
+  .filter((t) => t.ticker)
+  .map((t, i) => {
+    const pol = politicians.find((p) => p.name === t.politician);
+    const amt = parseAmount(t.amount);
+    return {
+      id: `t${i + 1}`,
+      politician_id: pol?.id || "",
+      ticker: t.ticker,
+      company_name: t.asset,
+      trade_type: (t.type === "sell" ? "sell" : "buy") as "buy" | "sell",
+      amount_low: amt.low,
+      amount_high: amt.high,
+      trade_date: t.trade_date,
+      disclosure_date: t.disclosure_date,
+      created_at: t.disclosure_date,
+      politician: pol || politicians[0],
+    };
+  });
+
+// === Trending tickers — computed from real trades ===
+const tickerStats: Record<string, { ticker: string; name: string; buys: number; sells: number }> = {};
+for (const t of trades) {
+  if (!t.ticker) continue;
+  if (!tickerStats[t.ticker]) tickerStats[t.ticker] = { ticker: t.ticker, name: t.company_name, buys: 0, sells: 0 };
+  if (t.trade_type === "buy") tickerStats[t.ticker].buys++;
+  else tickerStats[t.ticker].sells++;
+}
+
+export const trendingTickers = Object.values(tickerStats)
+  .sort((a, b) => (b.buys + b.sells) - (a.buys + a.sells))
+  .slice(0, 15)
+  .map((s) => {
+    const p = prices[s.ticker];
+    return {
+      ticker: s.ticker,
+      name: s.name,
+      buyCount: s.buys,
+      sellCount: s.sells,
+      price: p?.price || 0,
+      change: p?.changePct || 0,
+    };
+  });
