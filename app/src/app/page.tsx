@@ -20,11 +20,11 @@ export default function HomePage() {
       {/* Header */}
       <header className="sticky top-0 bg-white z-40 border-b border-gray-100">
         <div className="px-5 pt-3.5 pb-2">
-          <h1 className="text-[17px] font-bold text-gray-900 tracking-tight">
-            {"\uC758\uC6D0\uC8FC\uC2DD"}
+          <h1 className="text-[20px] font-bold text-gray-900 tracking-tight">
+            {"의원주식"}
           </h1>
-          <p className="text-[11px] text-gray-400 mt-0.5 tracking-tight">
-            {"\uC624\uB298 \uAC00\uC7A5 \uB3C8 \uBC88 \uC815\uCE58\uC778\uC740?"}
+          <p className="text-[13px] text-gray-400 mt-0.5 tracking-tight">
+            {"오늘 가장 돈 번 정치인은?"}
           </p>
         </div>
         <div className="pb-2.5">
@@ -36,10 +36,10 @@ export default function HomePage() {
       <main className="flex-1">
         <section>
           <div className="px-5 pt-3 pb-1.5">
-            <h2 className="text-[13px] font-bold text-gray-700 tracking-tight">
-              {"\uC624\uB298\uC758 \uC218\uC775 TOP"}
+            <h2 className="text-[15px] font-bold text-gray-700 tracking-tight">
+              {"오늘의 수익 TOP"}
             </h2>
-            <p className="text-[10px] text-gray-400 mt-0.5">
+            <p className="text-[12px] text-gray-400 mt-0.5">
               {"2026.05.15 기준 · Yahoo Finance 실시간"}
             </p>
           </div>
@@ -53,8 +53,8 @@ export default function HomePage() {
         {/* Section: 최근 거래 */}
         <section className="mt-4">
           <div className="px-5 pb-1.5">
-            <h2 className="text-[13px] font-bold text-gray-700 tracking-tight">
-              {"\uCD5C\uADFC \uACF5\uC2DC\uB41C \uAC70\uB798"}
+            <h2 className="text-[15px] font-bold text-gray-700 tracking-tight">
+              {"최근 공시된 거래"}
             </h2>
           </div>
           <div className="divide-y divide-gray-50">
@@ -73,20 +73,20 @@ export default function HomePage() {
                 </div>
                 <div className="flex-1 min-w-0">
                   <div className="flex items-center gap-1.5">
-                    <span className="text-[12px] font-semibold text-gray-900">
+                    <span className="text-[14px] font-semibold text-gray-900">
                       {trade.ticker}
                     </span>
-                    <span className="text-[10px] text-gray-400">
+                    <span className="text-[12px] text-gray-400">
                       {trade.company_name}
                     </span>
                   </div>
-                  <span className="text-[10px] text-gray-500">
+                  <span className="text-[12px] text-gray-500">
                     {trade.politician.name_kr} · {getRelativeTime(trade.disclosure_date)}
                   </span>
                 </div>
                 <div className="text-right">
                   <span
-                    className={`text-[11px] font-semibold ${
+                    className={`text-[13px] font-semibold ${
                       trade.trade_type === "buy"
                         ? "text-positive"
                         : "text-negative"
@@ -103,7 +103,7 @@ export default function HomePage() {
 
       {/* Disclaimer */}
       <div className="px-5 py-3 mt-3">
-        <p className="text-[9px] text-gray-400 text-center leading-relaxed">
+        <p className="text-[11px] text-gray-400 text-center leading-relaxed">
           {"\uBCF8 \uC11C\uBE44\uC2A4\uB294 \uACF5\uACF5 \uB370\uC774\uD130 \uAE30\uBC18 \uC815\uBCF4 \uC81C\uACF5 \uBAA9\uC801\uC774\uBA70, \uD22C\uC790 \uAD8C\uC720\uB098 \uC870\uC5B8\uC774 \uC544\uB2D9\uB2C8\uB2E4."}
         </p>
       </div>
