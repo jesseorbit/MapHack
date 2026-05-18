@@ -179,7 +179,7 @@ export const holdings: HoldingWithPrice[] = [
       amount_high: mp["total_\uB9CC\uC6D0"] * 10000,
       asset_type: "stock" as const,
       updated_at: "2025-03-27",
-      current_price: 0,
+      current_price: (stock as { price?: number }).price ?? 0,
       change_pct: 0,
     }))
   ),
