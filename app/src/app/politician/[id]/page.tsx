@@ -102,33 +102,46 @@ export default function PoliticianPage({
             <h2 className="text-[15px] font-bold text-gray-700">{"보유 종목"}</h2>
           </div>
           <div className="divide-y divide-gray-50">
-            {politicianHoldings.map((holding) => (
-              <div key={holding.id} className="flex items-center gap-3 px-5 py-3.5">
-                <TickerLogo ticker={holding.ticker} size={36} />
-                <div className="flex-1 min-w-0">
-                  <span className="text-[14px] font-semibold text-gray-900 block truncate">
-                    {politician.country === "KR" ? holding.company_name : holding.ticker}
-                  </span>
-                  <span className="text-[12px] text-gray-400">
-                    {politician.country === "KR" ? holding.ticker : holding.company_name}
-                  </span>
-                </div>
-                <div className="text-right">
-                  {holding.current_price && (
-                    <span className="text-[14px] font-semibold text-gray-900 block">
-                      {politician.country === "KR"
-                        ? `${holding.current_price.toLocaleString()}원`
-                        : `$${holding.current_price.toLocaleString()}`}
+            {politicianHoldings.map((holding) => {
+              const isKR = politician.country === "KR";
+              const positionValue = holding.current_price && holding.shares
+                ? holding.shares * holding.current_price
+                : 0;
+              return (
+                <div key={holding.id} className="flex items-center gap-3 px-5 py-3.5">
+                  <TickerLogo ticker={holding.ticker} size={36} />
+                  <div className="flex-1 min-w-0">
+                    <span className="text-[14px] font-semibold text-gray-900 block truncate">
+                      {isKR ? holding.company_name : holding.ticker}
                     </span>
-                  )}
-                  {holding.change_pct !== undefined && (
-                    <span className={`text-[12px] font-medium ${holding.change_pct >= 0 ? "text-positive" : "text-negative"}`}>
-                      {formatPct(holding.change_pct)}
+                    <span className="text-[12px] text-gray-400">
+                      {isKR ? `${holding.shares?.toLocaleString()}주` : holding.company_name}
                     </span>
-                  )}
+                  </div>
+                  <div className="text-right">
+                    {isKR ? (
+                      <span className="text-[13px] font-medium text-gray-500">
+                        {holding.shares?.toLocaleString()}주
+                      </span>
+                    ) : positionValue > 0 ? (
+                      <>
+                        <span className="text-[14px] font-semibold text-gray-900 block">
+                          {formatMoney(positionValue, "US")}
+                        </span>
+                        <span className="text-[12px] text-gray-400">
+                          {holding.shares?.toLocaleString()}주 · ${holding.current_price?.toLocaleString()}
+                        </span>
+                        {holding.change_pct !== undefined && holding.change_pct !== 0 && (
+                          <span className={`text-[11px] font-medium block ${holding.change_pct >= 0 ? "text-positive" : "text-negative"}`}>
+                            {formatPct(holding.change_pct)}
+                          </span>
+                        )}
+                      </>
+                    ) : null}
+                  </div>
                 </div>
-              </div>
-            ))}
+              );
+            })}
           </div>
         </section>
       )}

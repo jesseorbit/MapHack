@@ -1,5 +1,6 @@
 "use client";
 
+import Link from "next/link";
 import { trendingTickers } from "@/lib/mock-data";
 import { formatPct } from "@/lib/utils";
 import { BottomNav } from "@/components/BottomNav";
@@ -30,7 +31,7 @@ export default function StocksPage() {
 
         <div className="divide-y divide-gray-50">
           {trendingTickers.map((stock) => (
-            <div key={stock.ticker} className="flex items-center px-5 py-3.5">
+            <Link key={stock.ticker} href={`/stocks/${stock.ticker}`} className="flex items-center px-5 py-3.5 active:bg-gray-50">
               <div className="flex-1 min-w-0">
                 <div className="flex items-center gap-2.5">
                   <TickerLogo ticker={stock.ticker} size={36} />
@@ -61,7 +62,7 @@ export default function StocksPage() {
                   {formatPct(stock.change)}
                 </p>
               </div>
-            </div>
+            </Link>
           ))}
         </div>
 
