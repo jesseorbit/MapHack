@@ -8,12 +8,23 @@ import { dailyPnl, trades } from "@/lib/mock-data";
 import { getRelativeTime } from "@/lib/utils";
 import { TickerLogo } from "@/components/TickerLogo";
 
+type SortMode = "daily" | "portfolio";
+
 export default function HomePage() {
   const [country, setCountry] = useState<"ALL" | "US" | "KR">("ALL");
+  const [sortMode, setSortMode] = useState<SortMode>("daily");
 
   const filtered = dailyPnl.filter(
     (item) => country === "ALL" || item.politician.country === country
   );
+
+  const sorted = [...filtered].sort((a, b) => {
+    if (sortMode === "daily") {
+      // 일일 수익 금액순 (절대값이 아닌 실제 수익순)
+      return b.daily_gain - a.daily_gain;
+    }
+    return b.total_portfolio_value - a.total_portfolio_value;
+  });
 
   return (
     <div className="flex flex-col min-h-screen pb-14">
@@ -35,17 +46,42 @@ export default function HomePage() {
       {/* Ranking List */}
       <main className="flex-1">
         <section>
-          <div className="px-5 pt-3 pb-1.5">
-            <h2 className="text-[15px] font-bold text-gray-700 tracking-tight">
-              {"주식 포트폴리오 랭킹"}
-            </h2>
-            <p className="text-[12px] text-gray-400 mt-0.5">
-              {"US 실시간 · KR 2025 공시 기준"}
-            </p>
+          <div className="px-5 pt-3 pb-2 flex items-end justify-between">
+            <div>
+              <h2 className="text-[15px] font-bold text-gray-700 tracking-tight">
+                {sortMode === "daily" ? "오늘의 수익 랭킹" : "포트폴리오 규모 랭킹"}
+              </h2>
+              <p className="text-[12px] text-gray-400 mt-0.5">
+                {"US 실시간 · KR 2025 공시 기준"}
+              </p>
+            </div>
+            {/* Sort Toggle */}
+            <div className="flex bg-gray-100 rounded-lg p-0.5">
+              <button
+                onClick={() => setSortMode("daily")}
+                className={`px-3 py-1.5 text-[12px] font-medium rounded-md transition-colors ${
+                  sortMode === "daily"
+                    ? "bg-white text-gray-900 shadow-sm"
+                    : "text-gray-400"
+                }`}
+              >
+                {"오늘 수익"}
+              </button>
+              <button
+                onClick={() => setSortMode("portfolio")}
+                className={`px-3 py-1.5 text-[12px] font-medium rounded-md transition-colors ${
+                  sortMode === "portfolio"
+                    ? "bg-white text-gray-900 shadow-sm"
+                    : "text-gray-400"
+                }`}
+              >
+                {"포트폴리오"}
+              </button>
+            </div>
           </div>
           <div className="divide-y divide-gray-50">
-            {filtered.map((pnl, i) => (
-              <RankingCard key={pnl.id} pnl={pnl} rank={i + 1} />
+            {sorted.map((pnl, i) => (
+              <RankingCard key={pnl.id} pnl={pnl} rank={i + 1} sortMode={sortMode} />
             ))}
           </div>
         </section>
@@ -81,7 +117,7 @@ export default function HomePage() {
                     </span>
                   </div>
                   <span className="text-[12px] text-gray-500">
-                    {trade.politician.name_kr} · {getRelativeTime(trade.disclosure_date)}
+                    {trade.politician.name_kr || trade.politician.name} · {getRelativeTime(trade.disclosure_date)}
                   </span>
                 </div>
                 <div className="text-right">
@@ -92,7 +128,7 @@ export default function HomePage() {
                         : "text-negative"
                     }`}
                   >
-                    {trade.trade_type === "buy" ? "\uB9E4\uC218" : "\uB9E4\uB3C4"}
+                    {trade.trade_type === "buy" ? "매수" : "매도"}
                   </span>
                 </div>
               </div>
@@ -104,7 +140,7 @@ export default function HomePage() {
       {/* Disclaimer */}
       <div className="px-5 py-3 mt-3">
         <p className="text-[11px] text-gray-400 text-center leading-relaxed">
-          {"\uBCF8 \uC11C\uBE44\uC2A4\uB294 \uACF5\uACF5 \uB370\uC774\uD130 \uAE30\uBC18 \uC815\uBCF4 \uC81C\uACF5 \uBAA9\uC801\uC774\uBA70, \uD22C\uC790 \uAD8C\uC720\uB098 \uC870\uC5B8\uC774 \uC544\uB2D9\uB2C8\uB2E4."}
+          {"본 서비스는 공공 데이터 기반 정보 제공 목적이며, 투자 권유나 조언이 아닙니다."}
         </p>
       </div>
 

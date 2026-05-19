@@ -7,11 +7,13 @@ import { formatMoney, formatPct, getPartyColor } from "@/lib/utils";
 type Props = {
   pnl: DailyPnl & { politician: Politician };
   rank: number;
+  sortMode?: "daily" | "portfolio";
 };
 
-export function RankingCard({ pnl, rank }: Props) {
+export function RankingCard({ pnl, rank, sortMode = "daily" }: Props) {
   const { politician } = pnl;
   const isPositive = pnl.daily_gain >= 0;
+  const hasDaily = pnl.daily_gain !== 0;
 
   return (
     <Link href={`/politician/${politician.id}`} className="block">
@@ -41,7 +43,7 @@ export function RankingCard({ pnl, rank }: Props) {
               {politician.name_kr || politician.name}
             </span>
             <span className="text-[12px] text-gray-400 shrink-0">
-              {politician.country === "US" ? politician.state : politician.chamber}
+              {politician.country === "US" ? politician.state || politician.chamber : politician.chamber}
             </span>
           </div>
           <div className="flex items-center gap-1 mt-0.5">
@@ -56,15 +58,34 @@ export function RankingCard({ pnl, rank }: Props) {
           </div>
         </div>
 
-        {/* Portfolio Value + Daily Change */}
+        {/* Right side — depends on sort mode */}
         <div className="text-right shrink-0">
-          <div className="text-[14px] font-semibold text-gray-900">
-            {formatMoney(pnl.total_portfolio_value, politician.country)}
-          </div>
-          {pnl.daily_gain !== 0 && (
-            <div className={`text-[11px] font-medium ${isPositive ? "text-positive" : "text-negative"}`}>
-              {formatPct(pnl.daily_return_pct)} · {isPositive ? "+" : ""}{formatMoney(pnl.daily_gain, politician.country)}
-            </div>
+          {sortMode === "daily" ? (
+            // 일일 수익순: 수익금 크게, 포트폴리오 작게
+            hasDaily ? (
+              <>
+                <div className={`text-[15px] font-bold ${isPositive ? "text-positive" : "text-negative"}`}>
+                  {isPositive ? "+" : ""}{formatMoney(pnl.daily_gain, politician.country)}
+                </div>
+                <div className={`text-[11px] font-medium ${isPositive ? "text-positive" : "text-negative"}`}>
+                  {formatPct(pnl.daily_return_pct)}
+                </div>
+              </>
+            ) : (
+              <div className="text-[13px] text-gray-300">{"변동 없음"}</div>
+            )
+          ) : (
+            // 포트폴리오순: 총 자산 크게, 일일 변동 작게
+            <>
+              <div className="text-[14px] font-semibold text-gray-900">
+                {formatMoney(pnl.total_portfolio_value, politician.country)}
+              </div>
+              {hasDaily && (
+                <div className={`text-[11px] font-medium ${isPositive ? "text-positive" : "text-negative"}`}>
+                  {formatPct(pnl.daily_return_pct)} · {isPositive ? "+" : ""}{formatMoney(pnl.daily_gain, politician.country)}
+                </div>
+              )}
+            </>
           )}
         </div>
       </div>
