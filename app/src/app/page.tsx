@@ -29,7 +29,7 @@ export default function HomePage() {
     .sort((a, b) => {
       const toKRW = (val: number, country: string) => country === "US" ? val * USD_KRW : val;
       if (sortMode === "daily") {
-        return toKRW(b.daily_gain, b.politician.country) - toKRW(a.daily_gain, a.politician.country);
+        return Math.abs(toKRW(b.daily_gain, b.politician.country)) - Math.abs(toKRW(a.daily_gain, a.politician.country));
       }
       return toKRW(b.total_portfolio_value, b.politician.country) - toKRW(a.total_portfolio_value, a.politician.country);
     });
