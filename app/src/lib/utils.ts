@@ -1,21 +1,18 @@
+const USD_KRW = 1500;
+
 export function formatMoney(amount: number, country: "US" | "KR"): string {
-  if (country === "US") {
-    if (Math.abs(amount) >= 1_000_000) {
-      return `$${(amount / 1_000_000).toFixed(1)}M`;
-    }
-    if (Math.abs(amount) >= 1_000) {
-      return `$${(amount / 1_000).toFixed(0)}K`;
-    }
-    return `$${amount.toFixed(0)}`;
+  // 전부 원화로 통일
+  const krw = country === "US" ? amount * USD_KRW : amount;
+  if (Math.abs(krw) >= 1_000_000_000_000) {
+    return `${(krw / 1_000_000_000_000).toFixed(1)}조`;
   }
-  // KR (원화)
-  if (Math.abs(amount) >= 100_000_000) {
-    return `${(amount / 100_000_000).toFixed(1)}억`;
+  if (Math.abs(krw) >= 100_000_000) {
+    return `${(krw / 100_000_000).toFixed(1)}억`;
   }
-  if (Math.abs(amount) >= 10_000) {
-    return `${(amount / 10_000).toFixed(0)}만`;
+  if (Math.abs(krw) >= 10_000) {
+    return `${(krw / 10_000).toFixed(0)}만`;
   }
-  return `${amount.toFixed(0)}원`;
+  return `${Math.round(krw).toLocaleString()}원`;
 }
 
 export function formatPct(pct: number): string {

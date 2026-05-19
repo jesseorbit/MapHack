@@ -122,16 +122,12 @@ export default function PoliticianPage({
                     {positionValue > 0 ? (
                       <>
                         <span className="text-[14px] font-semibold text-gray-900 block">
-                          {isKR
-                            ? formatMoney(positionValue, "KR")
-                            : formatMoney(positionValue, "US")}
+                          {formatMoney(positionValue, politician.country)}
                         </span>
                         <span className="text-[12px] text-gray-400">
-                          {holding.shares?.toLocaleString()}주 · {isKR
-                            ? `${holding.current_price?.toLocaleString()}원`
-                            : `$${holding.current_price?.toLocaleString()}`}
+                          {holding.shares?.toLocaleString()}주
                         </span>
-                        {!isKR && holding.change_pct !== undefined && holding.change_pct !== 0 && (
+                        {holding.change_pct !== undefined && holding.change_pct !== 0 && (
                           <span className={`text-[11px] font-medium block ${holding.change_pct >= 0 ? "text-positive" : "text-negative"}`}>
                             {formatPct(holding.change_pct)}
                           </span>
