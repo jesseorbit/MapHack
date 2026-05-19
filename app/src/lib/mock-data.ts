@@ -190,26 +190,20 @@ function calcPnl(politicianId: string): { gain: number; value: number; pct: numb
   };
 }
 
-// All politicians PnL — calculated from actual holdings, ranked per country
+// All politicians PnL — calculated from actual holdings
+const USD_TO_KRW = 1500;
+
 const allPnlEntries = politicians
-  .map((pol) => ({ pol, ...calcPnl(pol.id) }))
+  .map((pol) => {
+    const pnl = calcPnl(pol.id);
+    // Normalize to KRW for unified ranking
+    const valueInKRW = pol.country === "US" ? pnl.value * USD_TO_KRW : pnl.value;
+    return { pol, ...pnl, valueInKRW };
+  })
   .filter((entry) => entry.value > 0);
 
-// Rank within each country, then merge
-const usPnl = allPnlEntries
-  .filter((e) => e.pol.country === "US")
-  .sort((a, b) => b.value - a.value);
-const krPnl = allPnlEntries
-  .filter((e) => e.pol.country === "KR")
-  .sort((a, b) => b.value - a.value);
-
-// Interleave: alternate US/KR for "ALL" view, so both are visible
-const merged: typeof allPnlEntries = [];
-const maxLen = Math.max(usPnl.length, krPnl.length);
-for (let i = 0; i < maxLen; i++) {
-  if (i < krPnl.length) merged.push(krPnl[i]);
-  if (i < usPnl.length) merged.push(usPnl[i]);
-}
+// Unified ranking by portfolio value (normalized to KRW)
+const merged = allPnlEntries.sort((a, b) => b.valueInKRW - a.valueInKRW);
 
 export const dailyPnl: PnlEntry[] = merged.map((entry, i) => ({
   id: `d-${entry.pol.id}`,
