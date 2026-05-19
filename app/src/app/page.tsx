@@ -37,10 +37,10 @@ export default function HomePage() {
         <section>
           <div className="px-5 pt-3 pb-1.5">
             <h2 className="text-[15px] font-bold text-gray-700 tracking-tight">
-              {"오늘의 수익 TOP"}
+              {"주식 포트폴리오 랭킹"}
             </h2>
             <p className="text-[12px] text-gray-400 mt-0.5">
-              {"2026.05.15 기준 · Yahoo Finance 실시간"}
+              {"US 실시간 · KR 2025 공시 기준"}
             </p>
           </div>
           <div className="divide-y divide-gray-50">
