@@ -81,41 +81,9 @@ const prices: Record<string, { price: number; change: number; changePct: number;
   CZR:   { price: 27.62, change: -0.18, changePct: -0.65, name: "Caesars" },
 };
 
-// KR stock daily changes (Yahoo Finance 실시간, company_name → changePct)
-const krDailyChanges: Record<string, { price: number; changePct: number }> = {
-  // KRX 종목
-  "안랩": { price: 60400, changePct: -0.66 },
-  "삼성전자": { price: 273000, changePct: -2.85 },
-  "삼성전자보통주": { price: 273000, changePct: -2.85 },
-  "삼성전자우": { price: 230000, changePct: -2.5 },
-  "삼성중공업": { price: 28350, changePct: -4.07 },
-  "삼성중공업보통주": { price: 28350, changePct: -4.07 },
-  "대한항공": { price: 25700, changePct: 0.59 },
-  "카카오": { price: 41800, changePct: -1.53 },
-  "현대차": { price: 603000, changePct: -9.05 },
-  "NAVER": { price: 198400, changePct: -0.80 },
-  "네이버": { price: 198400, changePct: -0.80 },
-  "LG에너지솔루션": { price: 401500, changePct: -1.59 },
-  "KB금융": { price: 152600, changePct: -0.26 },
-  "KB금융지주보통주": { price: 152600, changePct: -0.26 },
-  "카카오뱅크": { price: 21400, changePct: -0.23 },
-  "셀트리온": { price: 182800, changePct: -0.22 },
-  "셀트리온보통주": { price: 182800, changePct: -0.22 },
-  "LG화학": { price: 348500, changePct: -6.56 },
-  "LG디스플레이": { price: 12760, changePct: -4.71 },
-  "POSCO": { price: 441000, changePct: -4.76 },
-  "POSCO홀딩스": { price: 441000, changePct: -4.76 },
-  // 한국 의원이 보유한 US 주식 (한국어명 → US 가격)
-  "테슬라": { price: 422.24 * 1500, changePct: -4.75 },
-  "애플": { price: 300.23 * 1500, changePct: 0.68 },
-  "엔비디아": { price: 225.32 * 1500, changePct: -4.42 },
-  "마이크로소프트": { price: 421.92 * 1500, changePct: 3.05 },
-  "아마존닷컴": { price: 264.14 * 1500, changePct: -1.15 },
-  "팔란티어테크": { price: 133.99 * 1500, changePct: 0.19 },
-  "브로드컴": { price: 425.19 * 1500, changePct: -3.32 },
-  "메타": { price: 614.23 * 1500, changePct: -0.68 },
-  "알파벳": { price: 396.78 * 1500, changePct: -1.07 },
-};
+// KR stock daily changes — auto-fetched from Yahoo Finance (62 stocks)
+import krPricesJson from "./kr-prices.json";
+const krDailyChanges: Record<string, { price: number; changePct: number }> = krPricesJson as Record<string, { price: number; changePct: number }>;
 
 // === Holdings: all US politicians with real prices ===
 type HoldingWithPrice = Holding & { current_price: number; change_pct: number };
