@@ -71,6 +71,24 @@ const prices: Record<string, { price: number; change: number; changePct: number;
   COIN:  { price: 195.43, change: -16.58, changePct: -7.82, name: "Coinbase" },
   BYND:  { price: 0.80, change: -0.0001, changePct: -0.01, name: "Beyond Meat" },
   RIVN:  { price: 13.79, change: -0.73, changePct: -5.03, name: "Rivian" },
+  // Additional US tickers from Senate trades
+  CLF:   { price: 10.66, change: 0.35, changePct: 3.39, name: "Cleveland-Cliffs" },
+  T:     { price: 24.43, change: 0.40, changePct: 1.66, name: "AT&T" },
+  PYPL:  { price: 44.39, change: -0.03, changePct: -0.06, name: "PayPal" },
+  DD:    { price: 48.64, change: -0.67, changePct: -1.36, name: "DuPont" },
+  PG:    { price: 142.39, change: 0.82, changePct: 0.58, name: "Procter & Gamble" },
+  BAX:   { price: 17.79, change: 0.49, changePct: 2.83, name: "Baxter" },
+  CZR:   { price: 27.62, change: -0.18, changePct: -0.65, name: "Caesars" },
+};
+
+// KR stock daily changes (Yahoo Finance 실시간, company_name → changePct)
+const krDailyChanges: Record<string, { price: number; changePct: number }> = {
+  "안랩": { price: 60400, changePct: -0.66 },
+  "삼성전자": { price: 273000, changePct: -2.85 },
+  "삼성전자보통주": { price: 273000, changePct: -2.85 },
+  "삼성중공업": { price: 28350, changePct: -4.07 },
+  "삼성중공업보통주": { price: 28350, changePct: -4.07 },
+  "대한항공": { price: 25700, changePct: 0.59 },
 };
 
 // === Holdings: all US politicians with real prices ===
@@ -137,8 +155,8 @@ export const holdings: HoldingWithPrice[] = [
       amount_high: ((mp as unknown as Record<string, number>)["total_\uCC9C\uC6D0"] ?? 0) * 1000,
       asset_type: "stock" as const,
       updated_at: "2025-03-27",
-      current_price: (stock as { price?: number }).price ?? 0,
-      change_pct: 0,
+      current_price: krDailyChanges[stock.company_name]?.price || (stock as { price?: number }).price || 0,
+      change_pct: krDailyChanges[stock.company_name]?.changePct || 0,
     }))
   ),
 ];
