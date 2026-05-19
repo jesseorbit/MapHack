@@ -29,7 +29,8 @@ export default function HomePage() {
     .sort((a, b) => {
       const toKRW = (val: number, country: string) => country === "US" ? val * USD_KRW : val;
       if (sortMode === "daily") {
-        return Math.abs(toKRW(b.daily_gain, b.politician.country)) - Math.abs(toKRW(a.daily_gain, a.politician.country));
+        // 가장 많이 번 사람 1위, 가장 많이 잃은 사람 꼴찌
+        return toKRW(b.daily_gain, b.politician.country) - toKRW(a.daily_gain, a.politician.country);
       }
       return toKRW(b.total_portfolio_value, b.politician.country) - toKRW(a.total_portfolio_value, a.politician.country);
     });
