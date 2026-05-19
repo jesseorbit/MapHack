@@ -134,7 +134,7 @@ export const holdings: HoldingWithPrice[] = [
       company_name: stock.company_name,
       shares: stock.shares,
       amount_low: 0,
-      amount_high: mp["total_\uB9CC\uC6D0"] * 10000,
+      amount_high: ((mp as unknown as Record<string, number>)["total_\uCC9C\uC6D0"] ?? 0) * 1000,
       asset_type: "stock" as const,
       updated_at: "2025-03-27",
       current_price: (stock as { price?: number }).price ?? 0,
