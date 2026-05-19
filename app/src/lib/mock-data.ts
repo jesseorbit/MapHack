@@ -95,12 +95,9 @@ const usHoldingsFromTrades: HoldingWithPrice[] = (() => {
     const key = pol.id;
     if (!polTickers[key]) polTickers[key] = {};
     if (!polTickers[key][t.ticker]) polTickers[key][t.ticker] = { asset: t.asset, amt: 0 };
-    // Estimate position from amount range
-    const midAmounts: Record<string, number> = {
-      "1K-15K": 8000, "15K-50K": 32500, "50K-100K": 75000,
-      "100K-250K": 175000, "250K-500K": 375000, "500K-1M": 750000, "1M-5M": 3000000,
-    };
-    polTickers[key][t.ticker].amt += midAmounts[t.amount] || 8000;
+    // Amount: numeric (from SQL dump) or string range (from Capitol Trades)
+    const amt = typeof t.amount === "number" ? t.amount : 8000;
+    polTickers[key][t.ticker].amt += amt;
   }
   const result: HoldingWithPrice[] = [];
   let idx = 0;
@@ -208,36 +205,24 @@ export const dailyPnl: PnlEntry[] = merged.map((entry, i) => ({
   rank: i + 1,
 }));
 
-// === Trades — auto-generated from Capitol Trades (real data) ===
-function parseAmount(amt: string): { low: number; high: number } {
-  const map: Record<string, { low: number; high: number }> = {
-    "1K-15K": { low: 1000, high: 15000 },
-    "15K-50K": { low: 15000, high: 50000 },
-    "50K-100K": { low: 50000, high: 100000 },
-    "100K-250K": { low: 100000, high: 250000 },
-    "250K-500K": { low: 250000, high: 500000 },
-    "500K-1M": { low: 500000, high: 1000000 },
-    "1M-5M": { low: 1000000, high: 5000000 },
-  };
-  return map[amt] || { low: 0, high: 0 };
-}
-
+// === Trades — from Senate stock trading SQL dump (22,541 trades) ===
 export const trades: (Trade & { politician: Politician })[] = usTradesData.trades
-  .filter((t) => t.ticker)
+  .filter((t) => t.ticker && t.ticker !== "N/A" && t.ticker !== "--")
+  .slice(0, 500) // Recent 500 trades for performance
   .map((t, i) => {
     const pol = politicians.find((p) => p.name === t.politician);
-    const amt = parseAmount(t.amount);
+    const amt = typeof t.amount === "number" ? t.amount : 8000;
     return {
       id: `t${i + 1}`,
       politician_id: pol?.id || "",
       ticker: t.ticker,
-      company_name: t.asset,
+      company_name: t.asset || t.ticker,
       trade_type: (t.type === "sell" ? "sell" : "buy") as "buy" | "sell",
-      amount_low: amt.low,
-      amount_high: amt.high,
+      amount_low: amt,
+      amount_high: Math.round(amt * 1.5),
       trade_date: t.trade_date,
-      disclosure_date: t.disclosure_date,
-      created_at: t.disclosure_date,
+      disclosure_date: t.disclosure_date || t.trade_date,
+      created_at: t.disclosure_date || t.trade_date,
       politician: pol || politicians[0],
     };
   });
