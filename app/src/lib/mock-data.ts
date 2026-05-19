@@ -175,13 +175,28 @@ function calcPnl(politicianId: string): { gain: number; value: number; pct: numb
   };
 }
 
-// All politicians PnL — calculated from actual holdings
-const allPnlRaw = politicians
+// All politicians PnL — calculated from actual holdings, ranked per country
+const allPnlEntries = politicians
   .map((pol) => ({ pol, ...calcPnl(pol.id) }))
-  .filter((entry) => entry.value > 0)
+  .filter((entry) => entry.value > 0);
+
+// Rank within each country, then merge
+const usPnl = allPnlEntries
+  .filter((e) => e.pol.country === "US")
+  .sort((a, b) => b.value - a.value);
+const krPnl = allPnlEntries
+  .filter((e) => e.pol.country === "KR")
   .sort((a, b) => b.value - a.value);
 
-export const dailyPnl: PnlEntry[] = allPnlRaw.map((entry, i) => ({
+// Interleave: alternate US/KR for "ALL" view, so both are visible
+const merged: typeof allPnlEntries = [];
+const maxLen = Math.max(usPnl.length, krPnl.length);
+for (let i = 0; i < maxLen; i++) {
+  if (i < krPnl.length) merged.push(krPnl[i]);
+  if (i < usPnl.length) merged.push(usPnl[i]);
+}
+
+export const dailyPnl: PnlEntry[] = merged.map((entry, i) => ({
   id: `d-${entry.pol.id}`,
   politician_id: entry.pol.id,
   date: "2026-05-15",
