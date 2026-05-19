@@ -14,17 +14,27 @@ export default function HomePage() {
   const [country, setCountry] = useState<"ALL" | "US" | "KR">("ALL");
   const [sortMode, setSortMode] = useState<SortMode>("daily");
 
+  const USD_KRW = 1500;
+
   const filtered = dailyPnl.filter(
     (item) => country === "ALL" || item.politician.country === country
   );
 
-  const sorted = [...filtered].sort((a, b) => {
-    if (sortMode === "daily") {
-      // 일일 수익 금액순 (절대값이 아닌 실제 수익순)
-      return b.daily_gain - a.daily_gain;
-    }
-    return b.total_portfolio_value - a.total_portfolio_value;
-  });
+  const sorted = [...filtered]
+    .filter((item) => {
+      // 오늘 수익 모드: 변동 없는 의원 숨김
+      if (sortMode === "daily") return item.daily_gain !== 0;
+      return true;
+    })
+    .sort((a, b) => {
+      if (sortMode === "daily") {
+        return b.daily_gain - a.daily_gain;
+      }
+      // 포트폴리오: USD×1500 환산하여 비교
+      const aVal = a.politician.country === "US" ? a.total_portfolio_value * USD_KRW : a.total_portfolio_value;
+      const bVal = b.politician.country === "US" ? b.total_portfolio_value * USD_KRW : b.total_portfolio_value;
+      return bVal - aVal;
+    });
 
   return (
     <div className="flex flex-col min-h-screen pb-14">
