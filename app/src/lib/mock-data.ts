@@ -156,13 +156,12 @@ function calcPnl(politicianId: string): { gain: number; value: number; pct: numb
   const movers: { ticker: string; impact: number }[] = [];
 
   for (const holding of polHoldings) {
-    const s = prices[holding.ticker];
-    if (!s || !holding.shares) continue;
-    const gain = holding.shares * s.change;
-    const value = holding.shares * s.price;
+    if (!holding.shares || !holding.current_price) continue;
+    const value = holding.shares * holding.current_price;
+    const gain = value * (holding.change_pct / 100);
     totalGain += gain;
     totalValue += value;
-    movers.push({ ticker: holding.ticker, impact: Math.abs(gain) });
+    movers.push({ ticker: holding.ticker || holding.company_name, impact: Math.abs(gain) });
   }
 
   movers.sort((a, b) => b.impact - a.impact);
@@ -176,57 +175,21 @@ function calcPnl(politicianId: string): { gain: number; value: number; pct: numb
   };
 }
 
-// US politicians PnL
-const usPnlRaw = politicians
-  .filter((pol) => pol.country === "US")
+// All politicians PnL — calculated from actual holdings
+const allPnlRaw = politicians
   .map((pol) => ({ pol, ...calcPnl(pol.id) }))
-  .sort((a, b) => b.gain - a.gain);
-
-// KR politicians (mock — no yahoo-finance for KRX)
-const krPnlData: { id: string; polId: string; gain: number; pct: number; value: number; movers: string[] }[] = [
-  { id: "dk1", polId: "k1", gain: 89000000, pct: 2.1, value: 4238095238, movers: ["삼성전자", "SK하이닉스"] },
-  { id: "dk2", polId: "k3", gain: 72000000, pct: 1.8, value: 4000000000, movers: ["삼성전자", "현대차"] },
-  { id: "dk3", polId: "k6", gain: 63000000, pct: 1.6, value: 3937500000, movers: ["LG에너지솔루션", "POSCO"] },
-  { id: "dk4", polId: "k2", gain: 45000000, pct: 1.2, value: 3750000000, movers: ["삼성SDI", "LG에너지솔루션"] },
-  { id: "dk5", polId: "k10", gain: 38000000, pct: 1.0, value: 3800000000, movers: ["한화에어로스페이스", "한화시스템"] },
-  { id: "dk6", polId: "k4", gain: 32000000, pct: 0.9, value: 3555555555, movers: ["네이버", "카카오"] },
-  { id: "dk7", polId: "k12", gain: 28000000, pct: 0.8, value: 3500000000, movers: ["KB금융", "신한지주"] },
-  { id: "dk8", polId: "k5", gain: 21000000, pct: 0.6, value: 3500000000, movers: ["셀트리온", "에코프로비엠"] },
-  { id: "dk9", polId: "k7", gain: 15000000, pct: 0.4, value: 3750000000, movers: ["현대모비스", "기아"] },
-  { id: "dk10", polId: "k9", gain: 12000000, pct: 0.3, value: 4000000000, movers: ["삼성바이오로직스", "삼성전자"] },
-  { id: "dk11", polId: "k8", gain: -8000000, pct: -0.2, value: 4000000000, movers: ["대한항공", "아시아나"] },
-  { id: "dk12", polId: "k11", gain: -15000000, pct: -0.4, value: 3750000000, movers: ["카카오뱅크", "크래프톤"] },
-  { id: "dk13", polId: "k13", gain: -22000000, pct: -0.6, value: 3666666666, movers: ["쿠팡", "배달의민족"] },
-  { id: "dk14", polId: "k14", gain: -28000000, pct: -0.8, value: 3500000000, movers: ["두산", "한진중공업"] },
-  { id: "dk15", polId: "k15", gain: -35000000, pct: -1.0, value: 3500000000, movers: ["HMM", "팬오션"] },
-];
-
-// Combine US + KR, sort by daily_return_pct descending, assign unified rank
-const allPnlRaw = [
-  ...usPnlRaw.map((entry) => ({
-    id: `d-${entry.pol.id}`,
-    politician_id: entry.pol.id,
-    date: "2026-05-15",
-    daily_gain: entry.gain,
-    daily_return_pct: entry.pct,
-    total_portfolio_value: entry.value,
-    top_movers: entry.movers,
-    politician: entry.pol,
-  })),
-  ...krPnlData.map((entry) => ({
-    id: entry.id,
-    politician_id: entry.polId,
-    date: "2026-05-15",
-    daily_gain: entry.gain,
-    daily_return_pct: entry.pct,
-    total_portfolio_value: entry.value,
-    top_movers: entry.movers,
-    politician: p(entry.polId),
-  })),
-].sort((a, b) => b.daily_return_pct - a.daily_return_pct);
+  .filter((entry) => entry.value > 0)
+  .sort((a, b) => b.value - a.value);
 
 export const dailyPnl: PnlEntry[] = allPnlRaw.map((entry, i) => ({
-  ...entry,
+  id: `d-${entry.pol.id}`,
+  politician_id: entry.pol.id,
+  date: "2026-05-15",
+  daily_gain: entry.gain,
+  daily_return_pct: entry.pct,
+  total_portfolio_value: entry.value,
+  top_movers: entry.movers,
+  politician: entry.pol,
   rank: i + 1,
 }));
 
