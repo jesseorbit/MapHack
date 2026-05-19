@@ -27,13 +27,11 @@ export default function HomePage() {
       return true;
     })
     .sort((a, b) => {
+      const toKRW = (val: number, country: string) => country === "US" ? val * USD_KRW : val;
       if (sortMode === "daily") {
-        return b.daily_gain - a.daily_gain;
+        return toKRW(b.daily_gain, b.politician.country) - toKRW(a.daily_gain, a.politician.country);
       }
-      // 포트폴리오: USD×1500 환산하여 비교
-      const aVal = a.politician.country === "US" ? a.total_portfolio_value * USD_KRW : a.total_portfolio_value;
-      const bVal = b.politician.country === "US" ? b.total_portfolio_value * USD_KRW : b.total_portfolio_value;
-      return bVal - aVal;
+      return toKRW(b.total_portfolio_value, b.politician.country) - toKRW(a.total_portfolio_value, a.politician.country);
     });
 
   return (
