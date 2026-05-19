@@ -56,15 +56,23 @@ export function RankingCard({ pnl, rank }: Props) {
           </div>
         </div>
 
-        {/* PnL */}
+        {/* PnL or Portfolio Value */}
         <div className="text-right shrink-0">
-          <div className={`text-[15px] font-bold ${isPositive ? "text-positive" : "text-negative"}`}>
-            {formatPct(pnl.daily_return_pct)}
-          </div>
-          <div className={`text-[12px] ${isPositive ? "text-positive" : "text-negative"}`}>
-            {isPositive ? "+" : ""}
-            {formatMoney(pnl.daily_gain, politician.country)}
-          </div>
+          {pnl.daily_gain !== 0 ? (
+            <>
+              <div className={`text-[15px] font-bold ${isPositive ? "text-positive" : "text-negative"}`}>
+                {formatPct(pnl.daily_return_pct)}
+              </div>
+              <div className={`text-[12px] ${isPositive ? "text-positive" : "text-negative"}`}>
+                {isPositive ? "+" : ""}
+                {formatMoney(pnl.daily_gain, politician.country)}
+              </div>
+            </>
+          ) : (
+            <div className="text-[14px] font-semibold text-gray-900">
+              {formatMoney(pnl.total_portfolio_value, politician.country)}
+            </div>
+          )}
         </div>
       </div>
     </Link>
