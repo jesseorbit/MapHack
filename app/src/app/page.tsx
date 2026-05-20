@@ -7,6 +7,7 @@ import { CountryTab } from "@/components/CountryTab";
 import { dailyPnl, trades } from "@/lib/mock-data";
 import { getRelativeTime } from "@/lib/utils";
 import { TickerLogo } from "@/components/TickerLogo";
+import { QuizCard } from "@/components/QuizCard";
 
 type SortMode = "daily" | "portfolio";
 
@@ -41,7 +42,7 @@ export default function HomePage() {
       <header className="sticky top-0 bg-white z-40 border-b border-gray-100">
         <div className="px-5 pt-3.5 pb-2">
           <h1 className="text-[20px] font-bold text-gray-900 tracking-tight">
-            {"의원주식"}
+            {"폴리워치"}
           </h1>
           <p className="text-[13px] text-gray-400 mt-0.5 tracking-tight">
             {"오늘 가장 돈 번 정치인은?"}
@@ -52,8 +53,15 @@ export default function HomePage() {
         </div>
       </header>
 
-      {/* Ranking List */}
+      {/* Quiz + Ranking */}
       <main className="flex-1">
+        {/* Quiz */}
+        <QuizCard pnlData={dailyPnl} />
+
+        {/* Divider */}
+        <div className="h-2 bg-gray-50" />
+
+        {/* Ranking */}
         <section>
           <div className="px-5 pt-3 pb-2 flex items-end justify-between">
             <div>
