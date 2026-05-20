@@ -42,7 +42,7 @@ export default function HomePage() {
       <header className="sticky top-0 bg-white z-40 border-b border-gray-100">
         <div className="px-5 pt-3.5 pb-2">
           <h1 className="text-[20px] font-bold text-gray-900 tracking-tight">
-            {"폴리워치"}
+            {"주식맵핵"}
           </h1>
           <p className="text-[13px] text-gray-400 mt-0.5 tracking-tight">
             {"오늘 가장 돈 번 정치인은?"}
